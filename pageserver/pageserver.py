@@ -12,7 +12,7 @@
   located in ./pages  (where '.' is the directory from which this
   program is run).
 """
-import os       # For os.path
+
 import config    # Configure from .ini files and command line
 import logging   # Better than print statements
 logging.basicConfig(format='%(levelname)s:%(message)s',
@@ -23,7 +23,6 @@ log = logging.getLogger(__name__)
 import socket    # Basic TCP/IP communication on the internet
 import _thread   # Response computation runs concurrently with main program
 
-DOCROOT = "./pages"  # Where to find files to serve
 
 def listen(portnum):
     """
@@ -92,34 +91,8 @@ def respond(sock):
 
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
-        # check if file exists. If so, transmit 200 ok and file contents. If not, transmit 404 not found
-        page_directory = f"{DOCROOT}/{parts[1]}"
-        if os.path.isfile(page_directory):
-            with open(page_directory, "r") as f:
-                file_contents = f.read()
-                transmit(STATUS_OK, sock)
-                transmit(file_contents, sock)
-        
-        # if request includes illegal characters "~" or "..", transmit 403 forbidden
-        elif "~" in parts[1] or ".." in parts[1]:
-            transmit(STATUS_FORBIDDEN, sock)
-            transmit("Request includes illegal characters: {}".format(page_directory), sock)
-
-        else:
-            transmit(STATUS_NOT_FOUND, sock)
-            transmit("File within this directory is not found: {}".format(page_directory), sock)
-
-
-
-            
-
-
-        # else:
-        #     transmit(STATUS_NOT_FOUND, sock)
-        #     transmit("File not found: {}".format(file_path), sock)
-
-        # transmit(STATUS_OK, sock)
-        # transmit(CAT, sock)
+        transmit(STATUS_OK, sock)
+        transmit(CAT, sock)
     else:
         log.info("Unhandled request: {}".format(request))
         transmit(STATUS_NOT_IMPLEMENTED, sock)
