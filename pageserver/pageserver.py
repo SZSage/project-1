@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 import socket    # Basic TCP/IP communication on the internet
 import _thread   # Response computation runs concurrently with main program
 
-DOCROOT = "./pages"  # Where to find files to serve
+
 
 def listen(portnum):
     """
@@ -93,7 +93,7 @@ def respond(sock):
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
         # check if file exists. If so, transmit 200 ok and file contents. If not, transmit 404 not found
-        page_directory = f"{DOCROOT}/{parts[1]}"
+        page_directory = f"{get_options().DOCROOT}/{parts[1]}"
         if os.path.isfile(page_directory):
             with open(page_directory, "r") as f:
                 file_contents = f.read()
@@ -109,17 +109,6 @@ def respond(sock):
             transmit(STATUS_NOT_FOUND, sock)
             transmit("File within this directory is not found: {}".format(page_directory), sock)
 
-
-
-            
-
-
-        # else:
-        #     transmit(STATUS_NOT_FOUND, sock)
-        #     transmit("File not found: {}".format(file_path), sock)
-
-        # transmit(STATUS_OK, sock)
-        # transmit(CAT, sock)
     else:
         log.info("Unhandled request: {}".format(request))
         transmit(STATUS_NOT_IMPLEMENTED, sock)
